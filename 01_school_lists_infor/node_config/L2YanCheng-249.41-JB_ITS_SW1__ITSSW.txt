@@ -1,0 +1,197 @@
+
+version S29_RGOS 11.4(1)B12P24
+hostname L2YanCheng-249.41-JB_ITS_SW1
+!
+spanning-tree mode mstp 
+spanning-tree
+!
+ip access-list standard snmpacl
+ 10 permit 120.133.42.96 0.0.0.15 
+ 20 permit 124.250.66.128 0.0.0.127 
+ 30 permit 10.4.250.0 0.0.0.255 
+ 40 permit 10.249.41.0 0.0.0.255 
+ 50 permit 61.148.212.128 0.0.0.31 
+ 60 permit 106.39.112.0 0.0.0.15 
+ 70 permit 124.248.48.16 0.0.0.15 
+ 80 permit 124.250.97.120 0.0.0.7 
+ 90 permit 124.250.25.144 0.0.0.15 
+ 100 permit 210.12.48.128 0.0.0.31 
+ 110 permit 1.203.114.112 0.0.0.15 
+ 120 permit 182.48.103.0 0.0.0.31 
+ 130 permit 117.114.138.96 0.0.0.7 
+ 140 permit host 39.107.75.155 
+ 150 permit host 47.94.231.117
+ 160 permit host 47.94.109.181
+ 170 permit host 124.250.97.114
+!
+ip access-list standard ssh
+ 10 permit 120.133.42.96 0.0.0.15 
+ 20 permit 124.250.66.128 0.0.0.127 
+ 30 permit 10.4.250.0 0.0.0.255 
+ 40 permit 10.249.41.0 0.0.0.255 
+ 50 permit 192.168.11.0 0.0.0.255 
+ 60 permit 61.148.212.128 0.0.0.31 
+ 70 permit 106.39.112.0 0.0.0.15 
+ 80 permit 124.248.48.16 0.0.0.15 
+ 90 permit 124.250.97.120 0.0.0.7 
+ 100 permit 124.250.25.144 0.0.0.15 
+ 110 permit 210.12.48.128 0.0.0.31 
+ 120 permit 1.203.114.112 0.0.0.15 
+ 130 permit 123.124.131.144 0.0.0.15 
+!
+ip dhcp snooping
+!
+username hwlywb privilege 15 password 7 025b4a30003760050802077f03065d0976
+!
+aaa new-model
+!         
+aaa accounting commands 1 default start-stop group tacacs+
+aaa accounting commands 15 default start-stop group tacacs+
+aaa authorization exec default group tacacs+ local
+aaa authorization commands 1 default group tacacs+ local
+aaa authorization commands 15 default group tacacs+ local
+aaa authentication login default group tacacs+ local
+!
+cwmp
+!
+service dhcp
+!
+!
+service password-encryption
+!
+redundancy
+!
+logging server 10.4.250.29
+!
+tacacs-server host 124.250.100.97
+tacacs-server host 124.250.100.98
+tacacs-server key 7 0128544f1701113c237d4543714846
+no zam
+aaa authorization config-commands
+enable service ssh-server
+!
+vlan 4
+ name ITS 
+!
+vlan 41
+ name YunTingKe
+!
+vlan 250
+ name MGMT&SS&AP
+!
+vlan 1
+!
+interface range gigabitEthernet 0/1 - 45
+ switchport access vlan 250
+ spanning-tree portfast
+!
+
+interface GigabitEthernet 0/1
+ description Connect-To-101-1
+ switchport access vlan 250
+ spanning-tree portfast
+!
+interface GigabitEthernet 0/2
+ description Connect-To-102-1
+ switchport access vlan 250
+ spanning-tree portfast
+!
+interface GigabitEthernet 0/3
+ description Connect-To-103-1
+ switchport access vlan 250
+ spanning-tree portfast
+!
+interface GigabitEthernet 0/4
+ description Connect-To-104-1
+ switchport access vlan 250
+ spanning-tree portfast
+!
+interface GigabitEthernet 0/5
+ description Connect-To-105-1
+ switchport access vlan 250
+ spanning-tree portfast
+!
+interface GigabitEthernet 0/6
+ description Connect-To-106-1
+ switchport access vlan 250
+ spanning-tree portfast
+!
+!
+interface GigabitEthernet 0/46
+ description Link-To-L2YanCheng-249.41-JBAGG_SW
+ port-group 1 mode active
+!
+interface GigabitEthernet 0/47
+ description Link-To-L2YanCheng-249.41-JBAGG_SW
+ port-group 1 mode active
+!
+interface GigabitEthernet 0/48
+ description Link-To-L2YanCheng-249.41-JBAGG_SW
+ port-group 1 mode active
+!
+interface AggregatePort 1
+ description Link-To-L2YanCheng-249.41-JBAGG_SW
+ switchport mode trunk
+ ip dhcp snooping trust
+!
+interface VLAN 250
+ description MGMT&SS&AP
+ ip address 10.249.41.231 255.255.255.0
+!
+ip route 0.0.0.0 0.0.0.0 10.249.41.254
+!
+!
+ip dhcp snooping
+!
+snmp-server community 7 100d1734011a490c220622 ro snmpacl 
+!
+line console 0
+ password 7 131d1b4d15104c2d0b1250592f26000b5b
+line vty 0 4
+ access-class ssh in
+ privilege level 15
+line vty 5 15
+ transport input telnet
+ privilege level 15
+line vty 16 35
+!
+clock timezone beijing +8 0
+ntp server 192.168.11.254
+!
+
+
+! add YunTingKe Vlan
+vlan 41
+name YunTingKe
+!
+!
+interface GigabitEthernet 0/38
+ switchport access vlan 41
+ description Lin-To-YunTingKe_NVR_1
+ spanning-tree portfast 
+ spanning-tree bpdufilter enable 
+ no shutdown
+!
+interface GigabitEthernet 0/37
+ switchport access vlan 41
+ description Lin-To-YunTingKe_NVR_2
+ spanning-tree portfast 
+ spanning-tree bpdufilter enable 
+ no shutdown
+!
+    
+
+
+crypto key generate rsa
+yes
+1024
+
+        
+
+
+
+#Do you want to save it?????????
+end
+write 
+
+
